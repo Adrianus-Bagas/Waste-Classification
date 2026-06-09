@@ -91,15 +91,14 @@ export default function WasteClassifier() {
     return () => clearInterval(interval);
   }, [model]);
 
-  console.log("prediction", prediction);
-
   return (
     <div>
       <h1>Waste Classifier</h1>
+      <div className="flex items-center gap-5">
+        <video ref={videoRef} width={300} height={300} autoPlay muted style={{borderRadius: 10}} />
 
-      <video ref={videoRef} width={1000} height={1000} autoPlay muted style={{borderRadius: 10}} />
-
-      <h2>Prediction: {prediction}</h2>
+        <h2>Prediction: {prediction}</h2>
+      </div>
     </div>
   );
 }
