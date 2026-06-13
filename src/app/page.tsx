@@ -98,12 +98,10 @@ export default function WasteClassifier() {
   }, [model]);
 
   return (
-    <div className="flex flex-col gap-1 items-center">
-      <h1>Waste Classifier</h1>
-      <div className="flex items-center gap-5">
-        <video ref={videoRef} autoPlay muted playsInline width={100} height={100} />
-        <h2>Prediction: {prediction}</h2>
-      </div>
+    <div className="flex flex-col gap-1 items-center text-xl py-5">
+      <div>Waste Classifier</div>
+      <video ref={videoRef} autoPlay muted playsInline width={100} height={100} />
+      <div>Prediction: {prediction}</div>
     </div>
   );
 }
