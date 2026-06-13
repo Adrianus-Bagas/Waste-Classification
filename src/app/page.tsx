@@ -10,7 +10,7 @@ export default function WasteClassifier() {
   const videoRef = useRef(null);
 
   const [model, setModel] = useState<tf.GraphModel<string | tf.io.IOHandler>>();
-  const [prediction, setPrediction] = useState("");
+  const [prediction, setPrediction] = useState<string>("");
 
   const loadModel = async () => {
     await tf.setBackend("webgl");
@@ -18,7 +18,6 @@ export default function WasteClassifier() {
 
     const loadedModel = await tf.loadGraphModel("/model.json");
 
-    console.log("Model loaded", loadedModel);
     setModel(loadedModel);
   };
 
@@ -30,25 +29,34 @@ export default function WasteClassifier() {
 
   // 2. Start webcam
   useEffect(() => {
-    async function setupCamera() {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-      });
+    let stream: MediaStream;
 
-      const video: any = videoRef.current;
-      if (!video) return;
+    const startCamera = async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
 
-      video.srcObject = stream;
+        const video: any = videoRef.current;
+        if (!video) return;
 
-      await new Promise((resolve) => {
-        video.onloadedmetadata = () => {
-          video.play();
-          resolve(0);
-        };
-      });
-    }
+        video.srcObject = stream;
 
-    setupCamera();
+        await new Promise<void>((resolve) => {
+          video.onloadedmetadata = () => resolve();
+        });
+
+        await video.play();
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    startCamera();
+
+    return () => {
+      stream?.getTracks().forEach((track) => track.stop());
+    };
   }, []);
 
   // 3. Prediction loop
@@ -79,8 +87,6 @@ export default function WasteClassifier() {
       const output: any = model.predict(tensor);
       const data = await output.data();
 
-      console.log("data", data);
-
       const maxIndex = data.indexOf(Math.max(...data));
       setPrediction(labels[maxIndex]);
 
@@ -92,11 +98,10 @@ export default function WasteClassifier() {
   }, [model]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-1 items-center">
       <h1>Waste Classifier</h1>
       <div className="flex items-center gap-5">
-        <video ref={videoRef} width={300} height={300} autoPlay muted style={{borderRadius: 10}} />
-
+        <video ref={videoRef} autoPlay muted playsInline width={100} height={100} />
         <h2>Prediction: {prediction}</h2>
       </div>
     </div>
