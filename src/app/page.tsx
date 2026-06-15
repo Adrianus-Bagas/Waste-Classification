@@ -16,7 +16,7 @@ export default function WasteClassifier() {
     await tf.setBackend("webgl");
     await tf.ready();
 
-    const loadedModel = await tf.loadGraphModel("/model.json");
+    const loadedModel = await tf.loadGraphModel("/Waste-Classification/model.json");
 
     setModel(loadedModel);
   };
