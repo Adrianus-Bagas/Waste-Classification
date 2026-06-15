@@ -78,15 +78,17 @@ export default function WasteClassifier() {
       const video = videoRef.current;
 
       // Capture frame
-      const tensor = tf.browser
-        .fromPixels(video)
-        .resizeNearestNeighbor([100, 100]) // adjust to your model input
-        .toFloat()
-        .div(255.0)
-        .expandDims();
+      const tensor = tf.tidy(() =>
+        tf.browser
+          .fromPixels(video)
+          .resizeNearestNeighbor([100, 100]) // adjust to your model input
+          .toFloat()
+          .div(255.0)
+          .expandDims(),
+      );
 
       // Predict
-      const output: any = model.predict(tensor);
+      const output: any = model.execute(tensor);
       const data = await output.data();
 
       const maxIndex = data.indexOf(Math.max(...data));
