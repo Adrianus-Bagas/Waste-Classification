@@ -34,7 +34,9 @@ export default function WasteClassifier() {
     const startCamera = async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: {
+            facingMode: "environment",
+          },
         });
 
         const video: any = videoRef.current;
@@ -98,7 +100,7 @@ export default function WasteClassifier() {
   }, [model]);
 
   return (
-    <div className="flex flex-col gap-1 items-center text-xl py-5">
+    <div className="flex flex-col gap-1 items-center text-xl py-5 bg-white text-black">
       <div>Waste Classifier</div>
       <video ref={videoRef} autoPlay muted playsInline width={100} height={100} />
       <div>Prediction: {prediction}</div>
